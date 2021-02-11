@@ -38,12 +38,6 @@ impl<Inner: Duplex + AsUnsafeReadWriteHandle> TerminalDuplexer<Inner> {
             write_config,
         }
     }
-
-    /// Consume `self` and return the inner stream.
-    #[inline]
-    pub fn into_inner(self) -> Inner {
-        self.inner
-    }
 }
 
 impl<Inner: Duplex + Read + Write> TerminalDuplexer<Inner> {
@@ -55,6 +49,12 @@ impl<Inner: Duplex + Read + Write> TerminalDuplexer<Inner> {
             read_config: None,
             write_config: None,
         }
+    }
+
+    /// Consume `self` and return the inner stream.
+    #[inline]
+    pub fn into_inner(self) -> Inner {
+        self.inner
     }
 
     fn reset(&mut self) {

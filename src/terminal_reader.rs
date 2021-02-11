@@ -28,12 +28,6 @@ impl<Inner: Read + AsUnsafeHandle> TerminalReader<Inner> {
         let read_config = detect_read_config(&inner);
         Self { inner, read_config }
     }
-
-    /// Consume `self` and return the inner stream.
-    #[inline]
-    pub fn into_inner(self) -> Inner {
-        self.inner
-    }
 }
 
 impl<Inner: Read> TerminalReader<Inner> {
@@ -45,6 +39,12 @@ impl<Inner: Read> TerminalReader<Inner> {
             inner,
             read_config: None,
         }
+    }
+
+    /// Consume `self` and return the inner stream.
+    #[inline]
+    pub fn into_inner(self) -> Inner {
+        self.inner
     }
 }
 

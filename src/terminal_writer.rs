@@ -54,12 +54,6 @@ impl<Inner: Write + AsUnsafeHandle> TerminalWriter<Inner> {
             },
         }
     }
-
-    /// Consume `self` and return the inner stream.
-    #[inline]
-    pub fn into_inner(self) -> Inner {
-        self.inner
-    }
 }
 
 impl<Inner: Write> TerminalWriter<Inner> {
@@ -70,6 +64,12 @@ impl<Inner: Write> TerminalWriter<Inner> {
             inner,
             write_config: None,
         }
+    }
+
+    /// Consume `self` and return the inner stream.
+    #[inline]
+    pub fn into_inner(self) -> Inner {
+        self.inner
     }
 }
 
