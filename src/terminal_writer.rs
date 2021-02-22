@@ -4,17 +4,15 @@ use crate::{
     config::{detect_write_config, WriteConfig},
     Terminal, TerminalColorSupport, WriteTerminal,
 };
-#[cfg(unix)]
-use std::os::unix::io::{AsRawFd, RawFd};
-#[cfg(target_os = "wasi")]
-use std::os::wasi::io::{AsRawFd, RawFd};
 use std::{
     fmt,
     io::{self, IoSlice, Write},
 };
-use unsafe_io::AsUnsafeHandle;
+#[cfg(not(windows))]
+use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::{AsUnsafeHandle, OwnsRaw};
 
 /// A wrapper around a `Write` which adds minimal terminal support.
 #[derive(Debug)]
@@ -88,6 +86,9 @@ impl<Inner: Write + AsRawHandleOrSocket> AsRawHandleOrSocket for TerminalWriter<
         self.inner.as_raw_handle_or_socket()
     }
 }
+
+// Safety: `TerminalWriter` implements `OwnsRaw` if `Inner` does.
+unsafe impl<Inner: Write + OwnsRaw> OwnsRaw for TerminalWriter<Inner> {}
 
 impl<Inner: Write> Terminal for TerminalWriter<Inner> {}
 

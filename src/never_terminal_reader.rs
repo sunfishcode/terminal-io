@@ -2,12 +2,11 @@
 
 use crate::{ReadTerminal, Terminal};
 use std::io::{self, IoSliceMut, Read};
-#[cfg(unix)]
-use std::os::unix::io::{AsRawFd, RawFd};
-#[cfg(target_os = "wasi")]
-use std::os::wasi::io::{AsRawFd, RawFd};
+#[cfg(not(windows))]
+use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::OwnsRaw;
 
 /// A wrapper around a `Read` which implements `ReadTerminal` but isn't ever
 /// a terminal.
@@ -45,6 +44,9 @@ impl<Inner: Read + AsRawHandleOrSocket> AsRawHandleOrSocket for NeverTerminalRea
         self.inner.as_raw_handle_or_socket()
     }
 }
+
+// Safety: `NeverTerminalReader` implements `OwnsRaw` if `Inner` does.
+unsafe impl<Inner: Read + OwnsRaw> OwnsRaw for NeverTerminalReader<Inner> {}
 
 impl<Inner: Read> Terminal for NeverTerminalReader<Inner> {}
 

@@ -1,16 +1,15 @@
 use crate::TerminalColorSupport;
 use duplex::Duplex;
-#[cfg(not(windows))]
-use std::mem::MaybeUninit;
-#[cfg(unix)]
-use std::os::unix::io::{AsRawFd, RawFd};
-#[cfg(target_os = "wasi")]
-use std::os::wasi::io::{AsRawFd, RawFd};
 use unsafe_io::{AsUnsafeHandle, AsUnsafeReadWriteHandle};
+#[cfg(not(windows))]
+use {
+    std::mem::MaybeUninit,
+    unsafe_io::os::posish::{AsRawFd, RawFd},
+};
 #[cfg(windows)]
 use {
     std::os::windows::io::AsRawHandle,
-    unsafe_io::{AsRawHandleOrSocket, RawHandleOrSocket},
+    unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket},
 };
 
 #[derive(Debug)]

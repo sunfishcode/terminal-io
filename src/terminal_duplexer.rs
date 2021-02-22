@@ -5,19 +5,15 @@ use crate::{
     DuplexTerminal, ReadTerminal, Terminal, TerminalColorSupport, WriteTerminal,
 };
 use duplex::{Duplex, HalfDuplex};
-#[cfg(unix)]
-use std::os::unix::io::RawFd;
-#[cfg(target_os = "wasi")]
-use std::os::wasi::io::RawFd;
 use std::{
     fmt,
     io::{self, IoSlice, IoSliceMut, Read, Write},
 };
 #[cfg(not(windows))]
-use unsafe_io::AsRawReadWriteFd;
-use unsafe_io::AsUnsafeReadWriteHandle;
+use unsafe_io::os::posish::{AsRawReadWriteFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::{AsRawReadWriteHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::os::windows::{AsRawReadWriteHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::{AsUnsafeReadWriteHandle, OwnsRaw};
 
 /// A wrapper around a `Read` + `Write` which adds minimal terminal support.
 #[derive(Debug)]
@@ -91,6 +87,9 @@ impl<Inner: Duplex + AsRawReadWriteHandleOrSocket> AsRawReadWriteHandleOrSocket
         self.inner.as_raw_write_handle_or_socket()
     }
 }
+
+// Safety: `TerminalDuplexer` implements `OwnsRaw` if `Inner` does.
+unsafe impl<Inner: Duplex + OwnsRaw> OwnsRaw for TerminalDuplexer<Inner> {}
 
 impl<Inner: Duplex> Terminal for TerminalDuplexer<Inner> {}
 

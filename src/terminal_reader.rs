@@ -6,12 +6,10 @@ use crate::{
 };
 use std::io::{self, IoSliceMut, Read};
 #[cfg(unix)]
-use std::os::unix::io::{AsRawFd, RawFd};
-#[cfg(target_os = "wasi")]
-use std::os::wasi::io::{AsRawFd, RawFd};
-use unsafe_io::AsUnsafeHandle;
+use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::{AsUnsafeHandle, OwnsRaw};
 
 /// A wrapper around a `Read` which adds minimal terminal support.
 #[derive(Debug)]
@@ -63,6 +61,9 @@ impl<Inner: Read + AsRawHandleOrSocket> AsRawHandleOrSocket for TerminalReader<I
         self.inner.as_raw_handle_or_socket()
     }
 }
+
+// Safety: `TerminalReader` implements `OwnsRaw` if `Inner` does.
+unsafe impl<Inner: Read + OwnsRaw> OwnsRaw for TerminalReader<Inner> {}
 
 impl<Inner: Read> Terminal for TerminalReader<Inner> {}
 
