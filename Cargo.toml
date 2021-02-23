@@ -14,8 +14,8 @@ readme = "README.md"
 rustc_version = "0.3.3"
 
 [dependencies]
-unsafe-io = "0.5.0"
-duplex = "0.1.0"
+unsafe-io = "0.5.2"
+duplex = "0.2.0"
 
 [target.'cfg(not(windows))'.dependencies]
 libc = "0.2.82"
