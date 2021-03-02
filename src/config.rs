@@ -86,7 +86,7 @@ pub(crate) fn detect_read_config<AUH: AsUnsafeHandle>(handle: &AUH) -> Option<Re
     let isatty = match handle
         .as_unsafe_handle()
         .as_raw_handle_or_socket()
-        .as_raw_handle()
+        .as_unowned_raw_handle()
     {
         Some(handle) => {
             if handle == std::io::stdin().as_raw_handle() {
@@ -153,7 +153,7 @@ pub(crate) fn detect_write_config<AUH: AsUnsafeHandle>(handle: &AUH) -> Option<W
     let (isatty, color_preference) = match handle
         .as_unsafe_handle()
         .as_raw_handle_or_socket()
-        .as_raw_handle()
+        .as_unowned_raw_handle()
     {
         Some(handle) => {
             if handle == std::io::stdout().as_raw_handle() {
