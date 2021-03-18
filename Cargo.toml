@@ -8,7 +8,6 @@ license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
 keywords = ["cli", "io"]
 categories = ["command-line-interface"]
 repository = "https://github.com/sunfishcode/terminal-io"
-readme = "README.md"
 
 [build-dependencies]
 rustc_version = "0.3.3"
