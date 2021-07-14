@@ -9,7 +9,7 @@ use std::io::{self, IoSliceMut, Read};
 use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
 use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
-use unsafe_io::{AsUnsafeHandle, OwnsRaw};
+use unsafe_io::AsGrip;
 
 /// A wrapper around a `Read` which adds minimal terminal support.
 #[derive(Debug)]
@@ -18,9 +18,9 @@ pub struct TerminalReader<Inner: Read> {
     read_config: Option<ReadConfig>,
 }
 
-impl<Inner: Read + AsUnsafeHandle> TerminalReader<Inner> {
+impl<Inner: Read + AsGrip> TerminalReader<Inner> {
     /// Wrap a `TerminalReader` around the given stream, autodetecting
-    /// terminal properties using its `AsUnsafeHandle` implementation.
+    /// terminal properties using its `AsGrip` implementation.
     #[inline]
     pub fn with_handle(inner: Inner) -> Self {
         let read_config = detect_read_config(&inner);
@@ -61,9 +61,6 @@ impl<Inner: Read + AsRawHandleOrSocket> AsRawHandleOrSocket for TerminalReader<I
         self.inner.as_raw_handle_or_socket()
     }
 }
-
-// Safety: `TerminalReader` implements `OwnsRaw` if `Inner` does.
-unsafe impl<Inner: Read + OwnsRaw> OwnsRaw for TerminalReader<Inner> {}
 
 impl<Inner: Read> Terminal for TerminalReader<Inner> {}
 

@@ -12,7 +12,7 @@ use std::{
 use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
 use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
-use unsafe_io::{AsUnsafeHandle, OwnsRaw};
+use unsafe_io::AsGrip;
 
 /// A wrapper around a `Write` which adds minimal terminal support.
 #[derive(Debug)]
@@ -21,9 +21,9 @@ pub struct TerminalWriter<Inner: Write> {
     write_config: Option<WriteConfig>,
 }
 
-impl<Inner: Write + AsUnsafeHandle> TerminalWriter<Inner> {
+impl<Inner: Write + AsGrip> TerminalWriter<Inner> {
     /// Wrap a `TerminalWriter` around the given stream, autodetecting
-    /// terminal properties using its `AsUnsafeHandle` implementation.
+    /// terminal properties using its `AsGrip` implementation.
     pub fn with_handle(inner: Inner) -> Self {
         let write_config = detect_write_config(&inner);
         Self {
@@ -86,9 +86,6 @@ impl<Inner: Write + AsRawHandleOrSocket> AsRawHandleOrSocket for TerminalWriter<
         self.inner.as_raw_handle_or_socket()
     }
 }
-
-// Safety: `TerminalWriter` implements `OwnsRaw` if `Inner` does.
-unsafe impl<Inner: Write + OwnsRaw> OwnsRaw for TerminalWriter<Inner> {}
 
 impl<Inner: Write> Terminal for TerminalWriter<Inner> {}
 

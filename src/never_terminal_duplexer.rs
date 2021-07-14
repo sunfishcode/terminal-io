@@ -10,7 +10,6 @@ use std::{
 use unsafe_io::os::posish::{AsRawReadWriteFd, RawFd};
 #[cfg(windows)]
 use unsafe_io::os::windows::{AsRawReadWriteHandleOrSocket, RawHandleOrSocket};
-use unsafe_io::OwnsRaw;
 
 /// A wrapper around a `Read` + `Write` which implements `DuplexTerminal`
 /// but isn't ever a terminal.
@@ -59,9 +58,6 @@ impl<Inner: Duplex + AsRawReadWriteHandleOrSocket> AsRawReadWriteHandleOrSocket
         self.inner.as_raw_write_handle_or_socket()
     }
 }
-
-// Safety: `NeverTerminalDuplexer` implements `OwnsRaw` if `Inner` does.
-unsafe impl<Inner: Duplex + OwnsRaw> OwnsRaw for NeverTerminalDuplexer<Inner> {}
 
 impl<Inner: Duplex> Terminal for NeverTerminalDuplexer<Inner> {}
 

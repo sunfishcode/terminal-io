@@ -9,7 +9,6 @@ use std::{
 use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
 use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
-use unsafe_io::OwnsRaw;
 
 /// A wrapper around a `Write` which implements `WriteTerminal` but isn't ever
 /// a terminal.
@@ -46,9 +45,6 @@ impl<Inner: Write + AsRawHandleOrSocket> AsRawHandleOrSocket for NeverTerminalWr
         self.inner.as_raw_handle_or_socket()
     }
 }
-
-// Safety: `NeverTerminalWriter` implements `OwnsRaw` if `Inner` does.
-unsafe impl<Inner: Write + OwnsRaw> OwnsRaw for NeverTerminalWriter<Inner> {}
 
 impl<Inner: Write> Terminal for NeverTerminalWriter<Inner> {}
 

@@ -13,7 +13,7 @@ use std::{
 use unsafe_io::os::posish::{AsRawReadWriteFd, RawFd};
 #[cfg(windows)]
 use unsafe_io::os::windows::{AsRawReadWriteHandleOrSocket, RawHandleOrSocket};
-use unsafe_io::{AsUnsafeReadWriteHandle, OwnsRaw};
+use unsafe_io::AsReadWriteGrip;
 
 /// A wrapper around a `Read` + `Write` which adds minimal terminal support.
 #[derive(Debug)]
@@ -23,10 +23,10 @@ pub struct TerminalDuplexer<Inner: Duplex> {
     write_config: Option<WriteConfig>,
 }
 
-impl<Inner: Duplex + AsUnsafeReadWriteHandle> TerminalDuplexer<Inner> {
+impl<Inner: Duplex + AsReadWriteGrip> TerminalDuplexer<Inner> {
     /// Wrap a `TerminalDuplex` around the given stream, autodetecting
-    /// terminal properties using its `AsUnsafeHandle` implementation.
-    pub fn with_handle(inner: Inner) -> Self {
+    /// terminal properties using its `AsGrip` implementation.
+    pub fn with_handle<'a>(inner: Inner) -> Self {
         let (read_config, write_config) = detect_read_write_config(&inner);
         Self {
             inner,
@@ -87,9 +87,6 @@ impl<Inner: Duplex + AsRawReadWriteHandleOrSocket> AsRawReadWriteHandleOrSocket
         self.inner.as_raw_write_handle_or_socket()
     }
 }
-
-// Safety: `TerminalDuplexer` implements `OwnsRaw` if `Inner` does.
-unsafe impl<Inner: Duplex + OwnsRaw> OwnsRaw for TerminalDuplexer<Inner> {}
 
 impl<Inner: Duplex> Terminal for TerminalDuplexer<Inner> {}
 

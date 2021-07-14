@@ -11,15 +11,15 @@ repository = "https://github.com/sunfishcode/terminal-io"
 exclude = ["/.github"]
 
 [build-dependencies]
-rustc_version = "0.3.3"
+rustc_version = "0.4.0"
 
 [dependencies]
-unsafe-io = "0.6.0"
-duplex = "0.4.0"
+unsafe-io = "0.7.1"
+duplex = "0.5.0"
+io-lifetimes = "0.2.0"
 
 [target.'cfg(not(windows))'.dependencies]
-libc = "0.2.82"
-posish = "0.6.0"
+posish = "0.16.0"
 terminfo = "0.7.3"
 
 [target.'cfg(windows)'.dependencies]
