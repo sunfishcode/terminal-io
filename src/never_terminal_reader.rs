@@ -2,10 +2,15 @@
 
 use crate::{ReadTerminal, Terminal};
 use std::io::{self, IoSliceMut, Read};
-#[cfg(not(windows))]
-use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::os::windows::{
+    AsHandleOrSocket, AsRawHandleOrSocket, BorrowedHandleOrSocket, RawHandleOrSocket,
+};
+#[cfg(not(windows))]
+use {
+    io_lifetimes::{AsFd, BorrowedFd},
+    unsafe_io::os::posish::{AsRawFd, RawFd},
+};
 
 /// A wrapper around a `Read` which implements `ReadTerminal` but isn't ever
 /// a terminal.
@@ -36,11 +41,27 @@ impl<Inner: Read + AsRawFd> AsRawFd for NeverTerminalReader<Inner> {
     }
 }
 
+#[cfg(not(windows))]
+impl<Inner: Read + AsFd> AsFd for NeverTerminalReader<Inner> {
+    #[inline]
+    fn as_fd(&self) -> BorrowedFd<'_> {
+        self.inner.as_fd()
+    }
+}
+
 #[cfg(windows)]
 impl<Inner: Read + AsRawHandleOrSocket> AsRawHandleOrSocket for NeverTerminalReader<Inner> {
     #[inline]
     fn as_raw_handle_or_socket(&self) -> RawHandleOrSocket {
         self.inner.as_raw_handle_or_socket()
+    }
+}
+
+#[cfg(windows)]
+impl<Inner: Read + AsHandleOrSocket> AsHandleOrSocket for NeverTerminalReader<Inner> {
+    #[inline]
+    fn as_handle_or_socket(&self) -> BorrowedHandleOrSocket {
+        self.inner.as_handle_or_socket()
     }
 }
 

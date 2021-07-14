@@ -5,11 +5,16 @@ use crate::{
     ReadTerminal, Terminal,
 };
 use std::io::{self, IoSliceMut, Read};
-#[cfg(unix)]
-use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::os::windows::{
+    AsHandleOrSocket, AsRawHandleOrSocket, BorrowedHandleOrSocket, RawHandleOrSocket,
+};
 use unsafe_io::AsGrip;
+#[cfg(not(windows))]
+use {
+    io_lifetimes::{AsFd, BorrowedFd},
+    unsafe_io::os::posish::{AsRawFd, RawFd},
+};
 
 /// A wrapper around a `Read` which adds minimal terminal support.
 #[derive(Debug)]
@@ -54,11 +59,27 @@ impl<Inner: Read + AsRawFd> AsRawFd for TerminalReader<Inner> {
     }
 }
 
+#[cfg(not(windows))]
+impl<Inner: Read + AsFd> AsFd for TerminalReader<Inner> {
+    #[inline]
+    fn as_fd(&self) -> BorrowedFd<'_> {
+        self.inner.as_fd()
+    }
+}
+
 #[cfg(windows)]
 impl<Inner: Read + AsRawHandleOrSocket> AsRawHandleOrSocket for TerminalReader<Inner> {
     #[inline]
     fn as_raw_handle_or_socket(&self) -> RawHandleOrSocket {
         self.inner.as_raw_handle_or_socket()
+    }
+}
+
+#[cfg(windows)]
+impl<Inner: Read + AsHandleOrSocket> AsHandleOrSocket for TerminalReader<Inner> {
+    #[inline]
+    fn as_handle_or_socket(&self) -> BorrowedHandleOrSocket<'_> {
+        self.inner.as_handle_or_socket()
     }
 }
 

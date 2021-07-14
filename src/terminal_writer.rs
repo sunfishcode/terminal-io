@@ -8,11 +8,16 @@ use std::{
     fmt,
     io::{self, IoSlice, Write},
 };
-#[cfg(not(windows))]
-use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::os::windows::{
+    AsHandleOrSocket, AsRawHandleOrSocket, BorrowedHandleOrSocket, RawHandleOrSocket,
+};
 use unsafe_io::AsGrip;
+#[cfg(not(windows))]
+use {
+    io_lifetimes::{AsFd, BorrowedFd},
+    unsafe_io::os::posish::{AsRawFd, RawFd},
+};
 
 /// A wrapper around a `Write` which adds minimal terminal support.
 #[derive(Debug)]
@@ -79,11 +84,27 @@ impl<Inner: Write + AsRawFd> AsRawFd for TerminalWriter<Inner> {
     }
 }
 
+#[cfg(not(windows))]
+impl<Inner: Write + AsFd> AsFd for TerminalWriter<Inner> {
+    #[inline]
+    fn as_fd(&self) -> BorrowedFd {
+        self.inner.as_fd()
+    }
+}
+
 #[cfg(windows)]
 impl<Inner: Write + AsRawHandleOrSocket> AsRawHandleOrSocket for TerminalWriter<Inner> {
     #[inline]
     fn as_raw_handle_or_socket(&self) -> RawHandleOrSocket {
         self.inner.as_raw_handle_or_socket()
+    }
+}
+
+#[cfg(windows)]
+impl<Inner: Write + AsHandleOrSocket> AsHandleOrSocket for TerminalWriter<Inner> {
+    #[inline]
+    fn as_handle_or_socket(&self) -> BorrowedHandleOrSocket<'_> {
+        self.inner.as_handle_or_socket()
     }
 }
 

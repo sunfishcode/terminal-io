@@ -9,11 +9,17 @@ use std::{
     fmt,
     io::{self, IoSlice, IoSliceMut, Read, Write},
 };
-#[cfg(not(windows))]
-use unsafe_io::os::posish::{AsRawReadWriteFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::os::windows::{AsRawReadWriteHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::os::windows::{
+    AsRawReadWriteHandleOrSocket, AsReadWriteHandleOrSocket, BorrowedHandleOrSocket,
+    RawHandleOrSocket,
+};
 use unsafe_io::AsReadWriteGrip;
+#[cfg(not(windows))]
+use {
+    io_lifetimes::BorrowedFd,
+    unsafe_io::os::posish::{AsRawReadWriteFd, AsReadWriteFd, RawFd},
+};
 
 /// A wrapper around a `Read` + `Write` which adds minimal terminal support.
 #[derive(Debug)]
@@ -73,6 +79,19 @@ impl<Inner: Duplex + AsRawReadWriteFd> AsRawReadWriteFd for TerminalDuplexer<Inn
     }
 }
 
+#[cfg(not(windows))]
+impl<Inner: Duplex + AsReadWriteFd> AsReadWriteFd for TerminalDuplexer<Inner> {
+    #[inline]
+    fn as_read_fd(&self) -> BorrowedFd<'_> {
+        self.inner.as_read_fd()
+    }
+
+    #[inline]
+    fn as_write_fd(&self) -> BorrowedFd<'_> {
+        self.inner.as_write_fd()
+    }
+}
+
 #[cfg(windows)]
 impl<Inner: Duplex + AsRawReadWriteHandleOrSocket> AsRawReadWriteHandleOrSocket
     for TerminalDuplexer<Inner>
@@ -85,6 +104,21 @@ impl<Inner: Duplex + AsRawReadWriteHandleOrSocket> AsRawReadWriteHandleOrSocket
     #[inline]
     fn as_raw_write_handle_or_socket(&self) -> RawHandleOrSocket {
         self.inner.as_raw_write_handle_or_socket()
+    }
+}
+
+#[cfg(windows)]
+impl<Inner: Duplex + AsReadWriteHandleOrSocket> AsReadWriteHandleOrSocket
+    for TerminalDuplexer<Inner>
+{
+    #[inline]
+    fn as_read_handle_or_socket(&self) -> BorrowedHandleOrSocket<'_> {
+        self.inner.as_read_handle_or_socket()
+    }
+
+    #[inline]
+    fn as_write_handle_or_socket(&self) -> BorrowedHandleOrSocket<'_> {
+        self.inner.as_write_handle_or_socket()
     }
 }
 
