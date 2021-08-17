@@ -13,7 +13,7 @@ use unsafe_io::AsGrip;
 #[cfg(not(windows))]
 use {
     io_lifetimes::{AsFd, BorrowedFd},
-    unsafe_io::os::posish::{AsRawFd, RawFd},
+    unsafe_io::os::rsix::{AsRawFd, RawFd},
 };
 
 /// A wrapper around a `Read` which adds minimal terminal support.

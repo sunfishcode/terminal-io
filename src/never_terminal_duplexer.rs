@@ -14,7 +14,7 @@ use unsafe_io::os::windows::{
 #[cfg(not(windows))]
 use {
     io_lifetimes::BorrowedFd,
-    unsafe_io::os::posish::{AsRawReadWriteFd, AsReadWriteFd, RawFd},
+    unsafe_io::os::rsix::{AsRawReadWriteFd, AsReadWriteFd, RawFd},
 };
 
 /// A wrapper around a `Read` + `Write` which implements `DuplexTerminal`

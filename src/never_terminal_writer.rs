@@ -12,7 +12,7 @@ use unsafe_io::os::windows::{
 #[cfg(not(windows))]
 use {
     io_lifetimes::{AsFd, BorrowedFd},
-    unsafe_io::os::posish::{AsRawFd, RawFd},
+    unsafe_io::os::rsix::{AsRawFd, RawFd},
 };
 
 /// A wrapper around a `Write` which implements `WriteTerminal` but isn't ever

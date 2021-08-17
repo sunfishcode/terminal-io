@@ -14,12 +14,12 @@ exclude = ["/.github"]
 rustc_version = "0.4.0"
 
 [dependencies]
-unsafe-io = "0.7.1"
-duplex = "0.5.0"
-io-lifetimes = "0.2.0"
+unsafe-io = "0.8.0"
+duplex = "0.6.0"
+io-lifetimes = { version = "0.2.3", default-features = false }
 
 [target.'cfg(not(windows))'.dependencies]
-posish = "0.16.0"
+rsix = "0.18.0"
 terminfo = "0.7.3"
 
 [target.'cfg(windows)'.dependencies]
