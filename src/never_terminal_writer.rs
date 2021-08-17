@@ -1,10 +1,8 @@
 //! The `NeverTerminalWriter` struct.
 
 use crate::{Terminal, TerminalColorSupport, WriteTerminal};
-use std::{
-    fmt,
-    io::{self, IoSlice, Write},
-};
+use std::fmt;
+use std::io::{self, IoSlice, Write};
 #[cfg(windows)]
 use unsafe_io::os::windows::{
     AsHandleOrSocket, AsRawHandleOrSocket, BorrowedHandleOrSocket, RawHandleOrSocket,

@@ -1,13 +1,9 @@
 //! The `TerminalWriter` struct.
 
-use crate::{
-    config::{detect_write_config, WriteConfig},
-    Terminal, TerminalColorSupport, WriteTerminal,
-};
-use std::{
-    fmt,
-    io::{self, IoSlice, Write},
-};
+use crate::config::{detect_write_config, WriteConfig};
+use crate::{Terminal, TerminalColorSupport, WriteTerminal};
+use std::fmt;
+use std::io::{self, IoSlice, Write};
 #[cfg(windows)]
 use unsafe_io::os::windows::{
     AsHandleOrSocket, AsRawHandleOrSocket, BorrowedHandleOrSocket, RawHandleOrSocket,

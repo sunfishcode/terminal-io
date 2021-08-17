@@ -1,9 +1,7 @@
 //! The `TerminalReader` struct.
 
-use crate::{
-    config::{detect_read_config, ReadConfig},
-    ReadTerminal, Terminal,
-};
+use crate::config::{detect_read_config, ReadConfig};
+use crate::{ReadTerminal, Terminal};
 use std::io::{self, IoSliceMut, Read};
 #[cfg(windows)]
 use unsafe_io::os::windows::{

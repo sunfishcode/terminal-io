@@ -1,14 +1,10 @@
 //! The `TerminalDuplex` struct.
 
-use crate::{
-    config::{detect_read_write_config, ReadConfig, WriteConfig},
-    DuplexTerminal, ReadTerminal, Terminal, TerminalColorSupport, WriteTerminal,
-};
+use crate::config::{detect_read_write_config, ReadConfig, WriteConfig};
+use crate::{DuplexTerminal, ReadTerminal, Terminal, TerminalColorSupport, WriteTerminal};
 use duplex::{Duplex, HalfDuplex};
-use std::{
-    fmt,
-    io::{self, IoSlice, IoSliceMut, Read, Write},
-};
+use std::fmt;
+use std::io::{self, IoSlice, IoSliceMut, Read, Write};
 #[cfg(windows)]
 use unsafe_io::os::windows::{
     AsRawReadWriteHandleOrSocket, AsReadWriteHandleOrSocket, BorrowedHandleOrSocket,
