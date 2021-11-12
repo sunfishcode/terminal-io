@@ -1,15 +1,15 @@
 //! The `NeverTerminalReader` struct.
 
 use crate::{ReadTerminal, Terminal};
-use std::io::{self, IoSliceMut, Read};
 #[cfg(windows)]
-use unsafe_io::os::windows::{
+use io_extras::os::windows::{
     AsHandleOrSocket, AsRawHandleOrSocket, BorrowedHandleOrSocket, RawHandleOrSocket,
 };
+use std::io::{self, IoSliceMut, Read};
 #[cfg(not(windows))]
 use {
+    io_extras::os::rustix::{AsRawFd, RawFd},
     io_lifetimes::{AsFd, BorrowedFd},
-    unsafe_io::os::rsix::{AsRawFd, RawFd},
 };
 
 /// A wrapper around a `Read` which implements `ReadTerminal` but isn't ever

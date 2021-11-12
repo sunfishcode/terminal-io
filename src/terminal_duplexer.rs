@@ -3,18 +3,18 @@
 use crate::config::{detect_read_write_config, ReadConfig, WriteConfig};
 use crate::{DuplexTerminal, ReadTerminal, Terminal, TerminalColorSupport, WriteTerminal};
 use duplex::{Duplex, HalfDuplex};
-use std::fmt;
-use std::io::{self, IoSlice, IoSliceMut, Read, Write};
+use io_extras::grip::AsReadWriteGrip;
 #[cfg(windows)]
-use unsafe_io::os::windows::{
+use io_extras::os::windows::{
     AsRawReadWriteHandleOrSocket, AsReadWriteHandleOrSocket, BorrowedHandleOrSocket,
     RawHandleOrSocket,
 };
-use unsafe_io::AsReadWriteGrip;
+use std::fmt;
+use std::io::{self, IoSlice, IoSliceMut, Read, Write};
 #[cfg(not(windows))]
 use {
+    io_extras::os::rustix::{AsRawReadWriteFd, AsReadWriteFd, RawFd},
     io_lifetimes::BorrowedFd,
-    unsafe_io::os::rsix::{AsRawReadWriteFd, AsReadWriteFd, RawFd},
 };
 
 /// A wrapper around a `Read` + `Write` which adds minimal terminal support.

@@ -2,17 +2,17 @@
 
 use crate::config::{detect_write_config, WriteConfig};
 use crate::{Terminal, TerminalColorSupport, WriteTerminal};
-use std::fmt;
-use std::io::{self, IoSlice, Write};
+use io_extras::grip::AsGrip;
 #[cfg(windows)]
-use unsafe_io::os::windows::{
+use io_extras::os::windows::{
     AsHandleOrSocket, AsRawHandleOrSocket, BorrowedHandleOrSocket, RawHandleOrSocket,
 };
-use unsafe_io::AsGrip;
+use std::fmt;
+use std::io::{self, IoSlice, Write};
 #[cfg(not(windows))]
 use {
+    io_extras::os::rustix::{AsRawFd, RawFd},
     io_lifetimes::{AsFd, BorrowedFd},
-    unsafe_io::os::rsix::{AsRawFd, RawFd},
 };
 
 /// A wrapper around a `Write` which adds minimal terminal support.

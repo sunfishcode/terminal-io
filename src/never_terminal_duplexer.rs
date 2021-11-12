@@ -2,17 +2,17 @@
 
 use crate::{DuplexTerminal, ReadTerminal, Terminal, TerminalColorSupport, WriteTerminal};
 use duplex::{Duplex, HalfDuplex};
-use std::fmt;
-use std::io::{self, IoSlice, IoSliceMut, Read, Write};
 #[cfg(windows)]
-use unsafe_io::os::windows::{
+use io_extras::os::windows::{
     AsRawReadWriteHandleOrSocket, AsReadWriteHandleOrSocket, BorrowedHandleOrSocket,
     RawHandleOrSocket,
 };
+use std::fmt;
+use std::io::{self, IoSlice, IoSliceMut, Read, Write};
 #[cfg(not(windows))]
 use {
+    io_extras::os::rustix::{AsRawReadWriteFd, AsReadWriteFd, RawFd},
     io_lifetimes::BorrowedFd,
-    unsafe_io::os::rsix::{AsRawReadWriteFd, AsReadWriteFd, RawFd},
 };
 
 /// A wrapper around a `Read` + `Write` which implements `DuplexTerminal`

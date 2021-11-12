@@ -1,8 +1,9 @@
 use crate::TerminalColorSupport;
 use duplex::Duplex;
-use unsafe_io::{AsGrip, AsRawGrip, AsReadWriteGrip, ReadHalf, WriteHalf};
+use io_extras::grip::{AsGrip, AsRawGrip, AsReadWriteGrip};
+use io_extras::read_write::{ReadHalf, WriteHalf};
 #[cfg(windows)]
-use {std::os::windows::io::AsRawHandle, unsafe_io::os::windows::AsRawHandleOrSocket};
+use {io_extras::os::windows::AsRawHandleOrSocket, std::os::windows::io::AsRawHandle};
 
 #[derive(Debug)]
 pub(crate) struct ReadConfig {
@@ -26,8 +27,8 @@ impl Default for ReadConfig {
 pub(crate) fn detect_read_write_config<Grip: Duplex + AsReadWriteGrip>(
     handle: &Grip,
 ) -> (Option<ReadConfig>, Option<WriteConfig>) {
-    let read_half = ReadHalf(handle);
-    let write_half = WriteHalf(handle);
+    let read_half = ReadHalf::new(handle);
+    let write_half = WriteHalf::new(handle);
 
     let (read_config, write_config) =
         if write_half.as_grip().as_raw_grip() == read_half.as_grip().as_raw_grip() {
@@ -68,9 +69,9 @@ pub(crate) fn detect_read_write_config<Grip: Duplex + AsReadWriteGrip>(
 
 #[cfg(not(windows))]
 pub(crate) fn detect_read_config<Grip: AsGrip>(handle: &Grip) -> Option<ReadConfig> {
-    match rsix::io::ioctl_tcgets(handle) {
+    match rustix::io::ioctl_tcgets(handle) {
         Ok(termios) => Some(ReadConfig {
-            line_by_line: (termios.c_lflag & rsix::io::ICANON) == rsix::io::ICANON,
+            line_by_line: (termios.c_lflag & rustix::io::ICANON) == rustix::io::ICANON,
         }),
         Err(_) => {
             // `tcgetattr` fails when it's not reading from a terminal.
@@ -108,7 +109,7 @@ pub(crate) fn detect_read_config<Grip: AsGrip>(handle: &Grip) -> Option<ReadConf
 
 #[cfg(not(windows))]
 pub(crate) fn detect_write_config<Grip: AsGrip>(handle: &Grip) -> Option<WriteConfig> {
-    if rsix::io::isatty(handle) {
+    if rustix::io::isatty(handle) {
         Some(detect_write_config_isatty(handle))
     } else {
         None

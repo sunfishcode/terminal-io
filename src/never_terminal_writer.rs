@@ -1,16 +1,16 @@
 //! The `NeverTerminalWriter` struct.
 
 use crate::{Terminal, TerminalColorSupport, WriteTerminal};
-use std::fmt;
-use std::io::{self, IoSlice, Write};
 #[cfg(windows)]
-use unsafe_io::os::windows::{
+use io_extras::os::windows::{
     AsHandleOrSocket, AsRawHandleOrSocket, BorrowedHandleOrSocket, RawHandleOrSocket,
 };
+use std::fmt;
+use std::io::{self, IoSlice, Write};
 #[cfg(not(windows))]
 use {
+    io_extras::os::rustix::{AsRawFd, RawFd},
     io_lifetimes::{AsFd, BorrowedFd},
-    unsafe_io::os::rsix::{AsRawFd, RawFd},
 };
 
 /// A wrapper around a `Write` which implements `WriteTerminal` but isn't ever
