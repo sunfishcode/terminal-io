@@ -10,9 +10,6 @@ categories = ["command-line-interface"]
 repository = "https://github.com/sunfishcode/terminal-io"
 exclude = ["/.github"]
 
-[build-dependencies]
-rustc_version = "0.4.0"
-
 [dependencies]
 io-extras = "0.12.0"
 duplex = "0.10.0"
