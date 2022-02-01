@@ -3,7 +3,9 @@ use duplex::Duplex;
 use io_extras::grip::{AsGrip, AsRawGrip, AsReadWriteGrip};
 use io_extras::read_write::{ReadHalf, WriteHalf};
 #[cfg(windows)]
-use {io_extras::os::windows::AsRawHandleOrSocket, std::os::windows::io::AsRawHandle};
+use is_terminal::IsTerminal;
+#[cfg(windows)]
+use {io_extras::os::windows::AsHandleOrSocket, std::os::windows::io::AsRawHandle};
 
 #[derive(Debug)]
 pub(crate) struct ReadConfig {
@@ -82,18 +84,8 @@ pub(crate) fn detect_read_config<Grip: AsGrip>(handle: &Grip) -> Option<ReadConf
 
 #[cfg(windows)]
 pub(crate) fn detect_read_config<Grip: AsGrip>(handle: &Grip) -> Option<ReadConfig> {
-    let isatty = match handle
-        .as_grip()
-        .as_raw_handle_or_socket()
-        .as_unowned_raw_handle()
-    {
-        Some(handle) => {
-            if handle == std::io::stdin().as_raw_handle() {
-                atty::is(atty::Stream::Stdin)
-            } else {
-                false
-            }
-        }
+    let isatty = match handle.as_grip().as_handle_or_socket().as_handle() {
+        Some(handle) => handle.is_terminal(),
         None => false,
     };
 
@@ -149,34 +141,20 @@ fn detect_write_config_isatty<Grip: AsGrip>(handle: &Grip) -> WriteConfig {
 }
 
 #[cfg(windows)]
-pub(crate) fn detect_write_config<Grip: AsGrip>(handle: &Grip) -> Option<WriteConfig> {
-    let (isatty, color_preference) = match handle
-        .as_grip()
-        .as_raw_handle_or_socket()
-        .as_unowned_raw_handle()
-    {
-        Some(handle) => {
-            if handle == std::io::stdout().as_raw_handle() {
-                (
-                    atty::is(atty::Stream::Stdout),
-                    detect_stdio_color_preference(),
-                )
-            } else if handle == std::io::stderr().as_raw_handle() {
-                (
-                    atty::is(atty::Stream::Stderr),
-                    detect_stdio_color_preference(),
-                )
+pub(crate) fn detect_write_config<Grip: AsGrip>(grip: &Grip) -> Option<WriteConfig> {
+    match grip.as_grip().as_handle_or_socket().as_handle() {
+        Some(handle) if handle.is_terminal() => {
+            let color_preference = if handle.as_raw_handle() == std::io::stdout().as_raw_handle() {
+                detect_stdio_color_preference()
+            } else if handle.as_raw_handle() == std::io::stderr().as_raw_handle() {
+                detect_stdio_color_preference()
             } else {
-                (false, false)
-            }
-        }
-        None => (false, false),
-    };
+                false
+            };
 
-    if isatty {
-        Some(detect_write_config_isatty(handle, color_preference))
-    } else {
-        None
+            Some(detect_write_config_isatty(grip, color_preference))
+        }
+        _ => None,
     }
 }
 
