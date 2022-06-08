@@ -71,9 +71,9 @@ pub(crate) fn detect_read_write_config<Grip: Duplex + AsReadWriteGrip>(
 
 #[cfg(not(windows))]
 pub(crate) fn detect_read_config<Grip: AsGrip>(handle: &Grip) -> Option<ReadConfig> {
-    match rustix::io::ioctl_tcgets(handle) {
+    match rustix::termios::tcgetattr(handle) {
         Ok(termios) => Some(ReadConfig {
-            line_by_line: (termios.c_lflag & rustix::io::ICANON) == rustix::io::ICANON,
+            line_by_line: (termios.c_lflag & rustix::termios::ICANON) == rustix::termios::ICANON,
         }),
         Err(_) => {
             // `tcgetattr` fails when it's not reading from a terminal.
@@ -101,7 +101,7 @@ pub(crate) fn detect_read_config<Grip: AsGrip>(handle: &Grip) -> Option<ReadConf
 
 #[cfg(not(windows))]
 pub(crate) fn detect_write_config<Grip: AsGrip>(handle: &Grip) -> Option<WriteConfig> {
-    if rustix::io::isatty(handle) {
+    if rustix::termios::isatty(handle) {
         Some(detect_write_config_isatty(handle))
     } else {
         None
