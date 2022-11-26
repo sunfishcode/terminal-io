@@ -11,7 +11,7 @@ repository = "https://github.com/sunfishcode/terminal-io"
 exclude = ["/.github"]
 
 [dependencies]
-io-extras = "0.16.0"
+io-extras = "0.17.0"
 duplex = "0.14.0"
 io-lifetimes = { version = "1.0.0", default-features = false }
 
