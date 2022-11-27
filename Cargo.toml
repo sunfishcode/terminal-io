@@ -12,7 +12,7 @@ exclude = ["/.github"]
 
 [dependencies]
 io-extras = "0.17.0"
-duplex = "0.14.0"
+duplex = "0.15.0"
 io-lifetimes = { version = "1.0.0", default-features = false }
 
 [target.'cfg(not(windows))'.dependencies]
