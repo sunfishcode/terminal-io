@@ -12,11 +12,11 @@ exclude = ["/.github"]
 
 [dependencies]
 io-extras = "0.17.0"
-duplex = "0.15.0"
+duplex = "0.16.0"
 io-lifetimes = { version = "1.0.0", default-features = false }
 
 [target.'cfg(not(windows))'.dependencies]
-rustix = { version = "0.36.0", features = ["mm"] }
+rustix = { version = "0.37.0", features = ["mm", "termios"] }
 terminfo = "0.7.3"
 
 [target.'cfg(windows)'.dependencies]
