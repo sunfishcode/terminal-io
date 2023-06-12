@@ -12,7 +12,7 @@ use std::io::{self, IoSlice, IoSliceMut, Read, Write};
 #[cfg(not(windows))]
 use {
     io_extras::os::rustix::{AsRawReadWriteFd, AsReadWriteFd, RawFd},
-    io_lifetimes::BorrowedFd,
+    std::os::fd::BorrowedFd,
 };
 
 /// A wrapper around a `Read` + `Write` which implements `DuplexTerminal`

@@ -11,7 +11,7 @@ use std::io::{self, IoSliceMut, Read};
 #[cfg(not(windows))]
 use {
     io_extras::os::rustix::{AsRawFd, RawFd},
-    io_lifetimes::{AsFd, BorrowedFd},
+    std::os::fd::{AsFd, BorrowedFd},
 };
 
 /// A wrapper around a `Read` which adds minimal terminal support.

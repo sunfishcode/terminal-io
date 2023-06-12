@@ -10,7 +10,7 @@ use std::io::{self, IoSlice, Write};
 #[cfg(not(windows))]
 use {
     io_extras::os::rustix::{AsRawFd, RawFd},
-    io_lifetimes::{AsFd, BorrowedFd},
+    std::os::fd::{AsFd, BorrowedFd},
 };
 
 /// A wrapper around a `Write` which implements `WriteTerminal` but isn't ever
