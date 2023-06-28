@@ -73,7 +73,9 @@ pub(crate) fn detect_read_write_config<Grip: Duplex + AsReadWriteGrip>(
 pub(crate) fn detect_read_config<Grip: AsGrip>(handle: &Grip) -> Option<ReadConfig> {
     match rustix::termios::tcgetattr(handle) {
         Ok(termios) => Some(ReadConfig {
-            line_by_line: (termios.c_lflag & rustix::termios::ICANON) == rustix::termios::ICANON,
+            line_by_line: termios
+                .local_modes
+                .contains(rustix::termios::LocalModes::ICANON),
         }),
         Err(_) => {
             // `tcgetattr` fails when it's not reading from a terminal.

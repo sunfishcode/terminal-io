@@ -15,7 +15,7 @@ io-extras = "0.18.0"
 duplex = "0.16.0"
 
 [target.'cfg(not(windows))'.dependencies]
-rustix = { version = "0.37.0", features = ["mm", "termios"] }
+rustix = { version = "0.38.0", features = ["mm", "termios"] }
 terminfo = "0.8.0"
 
 [target.'cfg(windows)'.dependencies]
