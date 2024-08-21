@@ -7,7 +7,7 @@ use is_terminal::IsTerminal;
 #[cfg(windows)]
 use {io_extras::os::windows::AsHandleOrSocket, std::os::windows::io::AsRawHandle};
 
-#[derive(Debug)]
+#[derive(Default, Debug)]
 pub(crate) struct ReadConfig {
     pub(crate) line_by_line: bool,
 }
@@ -16,14 +16,6 @@ pub(crate) struct ReadConfig {
 pub(crate) struct WriteConfig {
     pub(crate) color_support: TerminalColorSupport,
     pub(crate) color_preference: bool,
-}
-
-impl Default for ReadConfig {
-    fn default() -> Self {
-        Self {
-            line_by_line: false,
-        }
-    }
 }
 
 pub(crate) fn detect_read_write_config<Grip: Duplex + AsReadWriteGrip>(

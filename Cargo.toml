@@ -16,7 +16,26 @@ duplex = "0.16.0"
 
 [target.'cfg(not(windows))'.dependencies]
 rustix = { version = "0.38.0", features = ["mm", "termios"] }
-terminfo = "0.8.0"
+terminfo = "0.9.0"
 
 [target.'cfg(windows)'.dependencies]
 is-terminal = "0.4.0"
+
+[lints.rust.unexpected_cfgs]
+level = "warn"
+check-cfg = [
+    'cfg(bench)',
+    'cfg(read_initializer)',
+    'cfg(can_vector)',
+    'cfg(clamp)',
+    'cfg(extend_one)',
+    'cfg(pattern)',
+    'cfg(seek_stream_len)',
+    'cfg(shrink_to)',
+    'cfg(toowned_clone_into)',
+    'cfg(try_reserve)',
+    'cfg(unix_socket_peek)',
+    'cfg(windows_by_handle)',
+    'cfg(write_all_vectored)',
+    'cfg(windows_file_type_ext)',
+]
