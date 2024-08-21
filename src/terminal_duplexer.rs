@@ -28,7 +28,7 @@ pub struct TerminalDuplexer<Inner: Duplex> {
 impl<Inner: Duplex + AsReadWriteGrip> TerminalDuplexer<Inner> {
     /// Wrap a `TerminalDuplex` around the given stream, autodetecting
     /// terminal properties using its `AsGrip` implementation.
-    pub fn with_handle<'a>(inner: Inner) -> Self {
+    pub fn with_handle(inner: Inner) -> Self {
         let (read_config, write_config) = detect_read_write_config(&inner);
         Self {
             inner,
@@ -57,7 +57,7 @@ impl<Inner: Duplex + Read + Write> TerminalDuplexer<Inner> {
 
     fn reset(&mut self) {
         if self.is_output_terminal() {
-            self.write("\x1b[!p\r\x1b[K".as_bytes()).ok();
+            self.write_all("\x1b[!p\r\x1b[K".as_bytes()).ok();
         }
     }
 }
