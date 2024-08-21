@@ -1,6 +1,6 @@
 [package]
 name = "terminal-io"
-version = "0.19.2"
+version = "0.19.3"
 description = "Utilities for reading and writing on terminals"
 authors = ["Dan Gohman <dev@sunfishcode.online>"]
 edition = "2021"
